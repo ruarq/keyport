@@ -2,6 +2,8 @@
 name = "keyport"
 version = "0.1.0"
 edition = "2024"
+description = "Utility which simplifies working with openssh cli tools"
+license = "MIT OR Apache-2.0"
 
 [dependencies]
 clap = { version = "4.5.32", features = ["derive"] }
