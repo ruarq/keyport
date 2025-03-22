@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use std::env;
 use std::ffi::OsStr;
 use std::fs;
 use std::io::{self, Write};
@@ -30,6 +31,29 @@ impl Interface {
             .output()
     }
 
+    fn ssh_agent_is_running() -> bool {
+        if let Ok(socket_path) = env::var("SSH_AUTH_SOCK") {
+            fs::exists(socket_path).is_ok()
+        } else {
+            false
+        }
+    }
+
+    fn start_ssh_agent() -> io::Result<process::Output> {
+        process::Command::new("ssh-agent").arg("-s").output()
+    }
+
+    fn ensure_ssh_agent_running() -> io::Result<()> {
+        if !Self::ssh_agent_is_running() {
+            match Self::start_ssh_agent() {
+                Ok(_) => Ok(()),
+                Err(err) => Err(err),
+            }
+        } else {
+            Ok(())
+        }
+    }
+
     fn launch_editor<P: ?Sized + AsRef<OsStr>>(filename: &P) -> io::Result<process::ExitStatus> {
         process::Command::new("vim").arg(filename).status()
     }
@@ -48,9 +72,7 @@ impl Interface {
         Self::launch_editor(pub_file).expect("failed to launch editor");
         Self::set_key_file_permissions(pub_file).expect("failed to set permissions");
 
-        process::Command::new("$(eval ssh-agent -s)")
-            .output()
-            .expect("failed to start ssh-agent");
+        Self::ensure_ssh_agent_running().expect("failed to start ssh-agent");
 
         process::Command::new("ssh-add")
             .arg(filename)
@@ -59,6 +81,8 @@ impl Interface {
     }
 
     fn remove(filename: &Path) {
+        Self::ensure_ssh_agent_running().expect("failed to start ssh-agent");
+
         process::Command::new("ssh-add")
             .arg("-d")
             .arg(filename)
@@ -79,7 +103,7 @@ enum Command {
 fn main() {
     let interface = Interface::parse();
 
-    let home_dir = std::env::var("HOME").expect("failed to get $HOME");
+    let home_dir = env::var("HOME").expect("failed to get $HOME");
     let ssh_dir = Path::new(&home_dir).join(".ssh");
 
     match interface.command {
