@@ -2,6 +2,9 @@
 Simplifies adding and removing SSH keys on UNIX like systems.
 Requires `openssh` installed on your system.
 
+## Disclaimer
+This is a rather hacky solution at the moment, so things might not work as expected.
+
 ## Installing
 
 ## Basic usage
