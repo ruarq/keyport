@@ -18,9 +18,10 @@ $ keyport add <name> # i.e. id_ed25519, id_rsa, ...
 $ keyport remove <name>
 ```
 
-# Roadmap
+# TODOs
 - [ ] Allow for password protection 
 - [ ] Support custom editors
 - [ ] Key validation (when adding)
 - [ ] List command to list active and inactive keys
 - [ ] Generating new keys
+- [ ] Open temporary files for the keys, validate them and only if everything is fine write them to the ssh directory.
