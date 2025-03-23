@@ -8,7 +8,7 @@ This is a rather hacky solution at the moment, so things might not work as expec
 ## Installing
 
 ## Basic usage
-### Adding an existing key
+### Adding an already generated key
 ```bash
 $ keyport add <name> # i.e. id_ed25519, id_rsa, ...
 ```
