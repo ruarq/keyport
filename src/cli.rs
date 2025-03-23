@@ -5,7 +5,7 @@ use crate::{ssh, util};
 use clap::{Parser, Subcommand};
 use std::fs;
 use std::io::{self, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 /// Clap parser for CLI arguments.
 #[derive(Parser)]
@@ -21,29 +21,33 @@ pub struct Interface {
 #[derive(Subcommand)]
 enum Command {
     #[command(about = "Add an existing key")]
-    Add { name: String },
+    Add { file: String },
 
     #[command(about = "Remove an added key")]
-    Remove { name: String },
+    Remove { file: String },
 
     #[command(about = "Show a public key")]
-    Show { name: String },
+    Show { file: String },
 
     #[command(name = "set-password", about = "Set the password of a key")]
-    SetPassword { name: String },
+    SetPassword { file: String },
 }
 
 impl Interface {
     /// Run the interface (after `Interface::parse()` has been called).
     pub fn run(&self) {
-        let ssh_dir = ssh::directory().expect("failed to find ssh directory");
-
         match &self.command {
-            Command::Add { name } => Interface::add(&ssh_dir.join(name)),
-            Command::Remove { name } => Interface::remove(&ssh_dir.join(name)),
-            Command::Show { name } => Interface::show(&ssh_dir.join(name)),
-            Command::SetPassword { name } => Interface::set_password(&ssh_dir.join(name)),
+            Command::Add { file } => Interface::add(&Self::make_filepath(file)),
+            Command::Remove { file } => Interface::remove(&Self::make_filepath(file)),
+            Command::Show { file } => Interface::show(&Self::make_filepath(file)),
+            Command::SetPassword { file } => Interface::set_password(&Self::make_filepath(file)),
         }
+    }
+
+    fn make_filepath(file: &str) -> PathBuf {
+        ssh::directory()
+            .expect("failed to find ssh directory")
+            .join(file)
     }
 
     /// Run the `keyport add` command to add already generated keys.
