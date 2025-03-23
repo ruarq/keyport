@@ -62,6 +62,18 @@ pub fn remove_key(private_key_filepath: &Path) -> io::Result<process::Output> {
         .output()
 }
 
+/// Set the password of an existing key.
+///
+/// # Parameters
+/// - `private_key_filepath`: The path to the private key file.
+pub fn set_password(private_key_filepath: &Path) -> io::Result<process::ExitStatus> {
+    process::Command::new("ssh-keygen")
+        .arg("-p")
+        .arg("-f")
+        .arg(private_key_filepath)
+        .status()
+}
+
 /// Obtain a public key based on the private key filepath.
 ///
 /// # Parameters

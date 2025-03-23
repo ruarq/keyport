@@ -28,6 +28,9 @@ enum Command {
 
     #[command(about = "Show a public key")]
     Show { name: String },
+
+    #[command(name = "set-password", about = "Set the password of a key")]
+    SetPassword { name: String },
 }
 
 impl Interface {
@@ -39,6 +42,7 @@ impl Interface {
             Command::Add { name } => Interface::add(&ssh_dir.join(name)),
             Command::Remove { name } => Interface::remove(&ssh_dir.join(name)),
             Command::Show { name } => Interface::show(&ssh_dir.join(name)),
+            Command::SetPassword { name } => Interface::set_password(&ssh_dir.join(name)),
         }
     }
 
@@ -92,5 +96,14 @@ impl Interface {
         io::stdout()
             .write_all(&output)
             .expect("failed to write public key to stdout");
+    }
+
+    /// Run the `keyport set-password` command to set the password of a key.
+    ///
+    /// # Parameters
+    /// - `filepath`: The path to the private key file.
+    fn set_password(filepath: &Path) {
+        ssh::ensure_agent_running().expect("failed to start ssh-agent");
+        ssh::set_password(filepath).expect("failed to set password");
     }
 }

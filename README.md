@@ -25,7 +25,7 @@ $ keyport show <name>
 
 # TODOs
 - [X] Show command to show public keys
-- [ ] Allow for password protection 
+- [X] Allow for password protection 
 - [ ] Support custom editors
 - [ ] Key validation (when adding)
 - [ ] List command to list active and inactive keys
