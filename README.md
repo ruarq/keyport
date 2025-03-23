@@ -19,6 +19,7 @@ $ keyport remove <name>
 ```
 
 # TODOs
+- [X] Show command to show public keys
 - [ ] Allow for password protection 
 - [ ] Support custom editors
 - [ ] Key validation (when adding)

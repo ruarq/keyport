@@ -60,3 +60,27 @@ pub fn remove_key(private_key_filepath: &Path) -> io::Result<process::Output> {
         .arg(private_key_filepath)
         .output()
 }
+
+/// Obtain a public key based on the private key filepath.
+///
+/// # Parameters
+/// - `private_key_filepath`: Path to the private key file.
+///
+/// # Returns
+/// A vector of bytes containing the public key data.
+pub fn get_public_key(private_key_filepath: &Path) -> io::Result<Vec<u8>> {
+    let output = process::Command::new("ssh-keygen")
+        .arg("-y")
+        .arg("-f")
+        .arg(private_key_filepath)
+        .output()?;
+
+    if output.status.success() {
+        Ok(output.stdout)
+    } else {
+        Err(io::Error::new(
+            io::ErrorKind::Other,
+            String::from_utf8_lossy(&output.stderr),
+        ))
+    }
+}

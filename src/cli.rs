@@ -4,6 +4,7 @@
 use crate::{ssh, util};
 use clap::{Parser, Subcommand};
 use std::fs;
+use std::io::{self, Write};
 use std::path::Path;
 
 /// Clap parser for CLI arguments.
@@ -24,6 +25,9 @@ enum Command {
 
     #[command(about = "Remove an added key")]
     Remove { name: String },
+
+    #[command(about = "Show a public key")]
+    Show { name: String },
 }
 
 impl Interface {
@@ -34,6 +38,7 @@ impl Interface {
         match &self.command {
             Command::Add { name } => Interface::add(&ssh_dir.join(name)),
             Command::Remove { name } => Interface::remove(&ssh_dir.join(name)),
+            Command::Show { name } => Interface::show(&ssh_dir.join(name)),
         }
     }
 
@@ -59,6 +64,8 @@ impl Interface {
 
         ssh::ensure_agent_running().expect("failed to start ssh-agent");
         ssh::add_key(filepath).expect("failed to ssh-add key");
+
+        Self::show(filepath);
     }
 
     /// Run the `keyport remove` command to remove existing keys.
@@ -72,5 +79,18 @@ impl Interface {
 
         fs::remove_file(filepath).expect("failed to remove private key file");
         fs::remove_file(filepath.with_extension("pub")).expect("failed to remove public key file");
+    }
+
+    /// Run the "keyport show` command to print a public key.
+    ///
+    /// # Parameters
+    /// - `filepath`: The path to the private key file.
+    fn show(filepath: &Path) {
+        ssh::ensure_agent_running().expect("failed to start ssh-agent");
+        let output = ssh::get_public_key(filepath).expect("failed to obtain public key");
+
+        io::stdout()
+            .write_all(&output)
+            .expect("failed to write public key to stdout");
     }
 }
