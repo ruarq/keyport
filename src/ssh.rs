@@ -57,6 +57,7 @@ pub fn add_key(private_key_filepath: &Path) -> io::Result<process::Output> {
 /// - `private_key_filepath`: The path to the private key file.
 pub fn remove_key(private_key_filepath: &Path) -> io::Result<process::Output> {
     process::Command::new("ssh-add")
+        .arg("-d")
         .arg(private_key_filepath)
         .output()
 }
