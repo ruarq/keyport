@@ -18,6 +18,11 @@ $ keyport add <name> # i.e. id_ed25519, id_rsa, ...
 $ keyport remove <name>
 ```
 
+### Show a public key
+```bash
+$ keyport show <name>
+```
+
 # TODOs
 - [X] Show command to show public keys
 - [ ] Allow for password protection 
