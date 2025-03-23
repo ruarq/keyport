@@ -3,8 +3,9 @@ use std::io::{self, Write};
 use std::path::Path;
 use std::process;
 
+/// Create a file and write some text to it.
 pub fn create_file_with_comment(filepath: &Path, comment: &str) -> io::Result<()> {
-    fs::File::create_new(filepath)?.write_all(comment.as_bytes())
+    write!(fs::File::create_new(filepath)?, "# {}", comment)
 }
 
 pub fn launch_editor(filepath: &Path) -> io::Result<process::ExitStatus> {

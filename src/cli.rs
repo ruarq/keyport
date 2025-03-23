@@ -32,14 +32,14 @@ impl Interface {
     }
 
     fn add(filename: &Path) {
-        util::create_file_with_comment(filename, "# Paste your private key here")
+        util::create_file_with_comment(filename, "Paste your private key here")
             .expect("failed to create file");
 
         util::launch_editor(filename).expect("failed to launch editor");
         util::set_file_permissions(filename, "600").expect("failed to set permissions");
 
         let pub_file = filename.with_extension("pub");
-        util::create_file_with_comment(&pub_file, "# Paste your public key here")
+        util::create_file_with_comment(&pub_file, "Paste your public key here")
             .expect("failed to create pub file");
 
         util::launch_editor(&pub_file).expect("failed to launch editor");
