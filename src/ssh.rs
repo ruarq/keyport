@@ -1,7 +1,9 @@
+//! This module "interfaces" with the `openssh` tools and other related things.
+
 use std::env;
 use std::fs;
 use std::io;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::process;
 
 /// Get the `~/.ssh` directory.
@@ -37,4 +39,24 @@ pub fn ensure_agent_running() -> io::Result<()> {
     } else {
         Ok(())
     }
+}
+
+/// Run `ssh-add` on an existing key.
+///
+/// # Parameters
+/// - `private_key_filepath`: The path to the private key file.
+pub fn add_key(private_key_filepath: &Path) -> io::Result<process::Output> {
+    process::Command::new("ssh-add")
+        .arg(private_key_filepath)
+        .output()
+}
+
+/// Run `ssh-add -d` on an existing key to remove it.
+///
+/// # Parameters
+/// - `private_key_filepath`: The path to the private key file.
+pub fn remove_key(private_key_filepath: &Path) -> io::Result<process::Output> {
+    process::Command::new("ssh-add")
+        .arg(private_key_filepath)
+        .output()
 }

@@ -1,8 +1,10 @@
+//! # CLI Parser
+//! This module implements the parser for the command line interface.
+
 use crate::{ssh, util};
 use clap::{Parser, Subcommand};
 use std::fs;
 use std::path::Path;
-use std::process;
 
 /// Clap parser for CLI arguments.
 #[derive(Parser)]
@@ -38,45 +40,37 @@ impl Interface {
     /// Run the `keyport add` command to add already generated keys.
     ///
     /// # Parameters
-    /// - `filename`: The path to where the private key file should be created.
-    fn add(filename: &Path) {
+    /// - `filepath`: The path to where the private key file should be created.
+    fn add(filepath: &Path) {
         let fallback_editor = "vi";
 
-        util::create_file_with_comment(filename, "Paste your private key here")
+        util::create_file_with_comment(filepath, "Paste your private key here")
             .expect("failed to create file");
 
-        util::launch_editor(filename, fallback_editor).expect("failed to launch editor");
-        util::set_file_permissions(filename, "600").expect("failed to set permissions");
+        util::launch_editor(filepath, fallback_editor).expect("failed to launch editor");
+        util::set_file_permissions(filepath, "600").expect("failed to set permissions");
 
-        let pub_file = filename.with_extension("pub");
-        util::create_file_with_comment(&pub_file, "Paste your public key here")
+        let pub_filepath = filepath.with_extension("pub");
+        util::create_file_with_comment(&pub_filepath, "Paste your public key here")
             .expect("failed to create pub file");
 
-        util::launch_editor(&pub_file, fallback_editor).expect("failed to launch editor");
-        util::set_file_permissions(&pub_file, "600").expect("failed to set permissions");
+        util::launch_editor(&pub_filepath, fallback_editor).expect("failed to launch editor");
+        util::set_file_permissions(&pub_filepath, "600").expect("failed to set permissions");
 
         ssh::ensure_agent_running().expect("failed to start ssh-agent");
-
-        process::Command::new("ssh-add")
-            .arg(filename)
-            .output()
-            .expect("failed to ssh-add key");
+        ssh::add_key(filepath).expect("failed to ssh-add key");
     }
 
     /// Run the `keyport remove` command to remove existing keys.
     ///
     /// # Parameters
-    /// - `filename`: The path to the private key file.
-    fn remove(filename: &Path) {
+    /// - `filepath`: The path to the private key file.
+    fn remove(filepath: &Path) {
         ssh::ensure_agent_running().expect("failed to start ssh-agent");
 
-        process::Command::new("ssh-add")
-            .arg("-d")
-            .arg(filename)
-            .output()
-            .expect("");
+        ssh::remove_key(filepath).expect("");
 
-        fs::remove_file(filename).expect("failed to remove private key file");
-        fs::remove_file(filename.with_extension("pub")).expect("failed to remove public key file");
+        fs::remove_file(filepath).expect("failed to remove private key file");
+        fs::remove_file(filepath.with_extension("pub")).expect("failed to remove public key file");
     }
 }

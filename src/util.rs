@@ -9,11 +9,6 @@ use std::process;
 /// # Parameters
 /// - `filepath`: The path to where the file should be created.
 /// - `comment`: The comment to write to the file.
-///
-/// # Examples
-/// ```
-/// keyport::util::create_file_with_comment("test.txt", "A simple comment.");
-/// ```
 pub fn create_file_with_comment(filepath: &Path, comment: &str) -> io::Result<()> {
     write!(fs::File::create_new(filepath)?, "# {}", comment)
 }
