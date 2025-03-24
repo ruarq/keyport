@@ -41,14 +41,14 @@ pub fn ensure_agent_running() -> io::Result<()> {
     }
 }
 
-/// Run `ssh-add` on an existing key.
+/// Run `ssh-add` on an already generated key. Will ask for a password.
 ///
 /// # Parameters
 /// - `private_key_filepath`: The path to the private key file.
-pub fn add_key(private_key_filepath: &Path) -> io::Result<process::Output> {
+pub fn add_key(private_key_filepath: &Path) -> io::Result<process::ExitStatus> {
     process::Command::new("ssh-add")
         .arg(private_key_filepath)
-        .output()
+        .status()
 }
 
 /// Run `ssh-add -d` on an existing key to remove it.

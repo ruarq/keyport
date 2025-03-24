@@ -14,28 +14,32 @@ pub fn create_file_with_comment(filepath: &Path, comment: &str) -> io::Result<()
 }
 
 /// Get the preferred editor of the user.
-pub fn get_preferred_editor() -> Option<String> {
+pub fn get_env_editor() -> Option<String> {
     match env::var("EDITOR") {
-        Ok(editor) => Some(editor),
+        Ok(editor) => match editor.as_str() {
+            // Reject nano, I don't understand why but for some reason it messes up the key files.
+            "nano" => None,
+            _ => Some(editor),
+        },
         Err(_) => None,
     }
 }
 
-/// Launch the users preferred editor for a file. The preferred editor is determined by the
-/// environment variable `$EDITOR`. If that variable is not set, the "fallback" editor will be
-/// used (under the assumption that it exists).
+/// Launch the an editor for a file.
 ///
 /// # Parameters
 /// - `filepath`: The path to the file that should be opened in the editor.
-/// - `fallback_editor`: The binary to use when the preferred editor couldn't be determined or
-///   doesn't exist.
-pub fn launch_editor(filepath: &Path, fallback_editor: &str) -> io::Result<process::ExitStatus> {
-    if let Some(editor) = get_preferred_editor() {
+/// - `editor`: The editor to prefer over $EDITOR.
+pub fn launch_editor(filepath: &Path, editor: Option<&str>) -> io::Result<process::ExitStatus> {
+    if let Some(editor) = editor {
+        process::Command::new(editor).arg(filepath).status()
+    } else if let Some(editor) = get_env_editor() {
         process::Command::new(editor).arg(filepath).status()
     } else {
-        process::Command::new(fallback_editor)
-            .arg(filepath)
-            .status()
+        Err(io::Error::new(
+            io::ErrorKind::Other,
+            "No editor, specify with option --editor.",
+        ))
     }
 }
 
