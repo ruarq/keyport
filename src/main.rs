@@ -1,6 +1,7 @@
 use clap::Parser;
-use keyport::cli::Interface;
+
+mod cli;
 
 fn main() {
-    Interface::parse().run();
+    cli::Interface::parse().run();
 }

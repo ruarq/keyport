@@ -1,8 +1,8 @@
 //! # CLI Parser
 //! This module implements the parser for the command line interface.
 
-use crate::{ssh, util};
 use clap::{Parser, Subcommand};
+use keyport::{ssh, util};
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
