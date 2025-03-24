@@ -23,11 +23,17 @@ $ keyport remove <name>
 $ keyport show <name>
 ```
 
+### Set the password of a key
+```bash
+$ keyport set-password <name>
+```
+
 # TODOs
 - [X] Show command to show public keys
 - [X] Allow for password protection 
-- [ ] Support custom editors
+- [X] Support custom editors
 - [ ] Key validation (when adding)
 - [ ] List command to list active and inactive keys
 - [ ] Generating new keys
 - [ ] Open temporary files for the keys, validate them and only if everything is fine write them to the ssh directory.
+- [ ] Improve the error handling
