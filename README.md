@@ -8,24 +8,29 @@ This is a rather hacky solution at the moment, so things might not work as expec
 ## Installing
 
 ## Basic usage
+When specifying only the name of a key, keyport will assume you mean a key in `~/.ssh/`.
+- `keyport show id_rsa` will show the key `~/.ssh/id_rsa.pub`
+- `keyport remove ./my_key` will remove the `my_key` key in the current directory.
+- `keyport add /path/to/key` will let you add the key at the specified path.
+
 ### Adding an already generated key
 ```bash
-$ keyport add <name> # i.e. id_ed25519, id_rsa, ...
+$ keyport add <FILE> # i.e. id_ed25519, id_rsa, ...
 ```
 
 ### Removing an added key
 ```bash
-$ keyport remove <name>
+$ keyport remove <FILE>
 ```
 
 ### Show a public key
 ```bash
-$ keyport show <name>
+$ keyport show <FILE>
 ```
 
 ### Set the password of a key
 ```bash
-$ keyport set-password <name>
+$ keyport set-password <FILE>
 ```
 
 # TODOs
