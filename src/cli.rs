@@ -6,6 +6,7 @@ use keyport::{ssh, util};
 use std::fs;
 use std::io::{self, Write};
 use std::path::{Path, PathBuf};
+use tempfile::NamedTempFile;
 
 /// Clap parser for CLI arguments.
 #[derive(Parser)]
@@ -94,18 +95,28 @@ impl Interface {
     /// - `filepath`: The path to where the private key file should be created.
     /// - `no_password`: Whether to not add a password to the key file or not.
     fn add(filepath: &Path, editor: Option<&str>, no_password: bool) {
-        util::create_file_with_comment(filepath, "Paste your private key here")
+        let private_keyfile =
+            NamedTempFile::new().expect("failed to create temporary file for private key");
+        let public_keyfile = NamedTempFile::new().expect("failed to create for public key");
+
+        util::create_file_with_comment(private_keyfile.path(), "Paste your private key here")
             .expect("failed to create file");
+        util::launch_editor(private_keyfile.path(), editor).expect("failed to launch editor");
 
-        util::launch_editor(filepath, editor).expect("failed to launch editor");
-        util::set_file_permissions(filepath, "600").expect("failed to set permissions");
-
-        let pub_filepath = filepath.with_extension("pub");
-        util::create_file_with_comment(&pub_filepath, "Paste your public key here")
+        util::create_file_with_comment(public_keyfile.path(), "Paste your public key here")
             .expect("failed to create pub file");
+        util::launch_editor(public_keyfile.path(), editor).expect("failed to launch editor");
 
-        util::launch_editor(&pub_filepath, editor).expect("failed to launch editor");
-        util::set_file_permissions(&pub_filepath, "600").expect("failed to set permissions");
+        private_keyfile
+            .persist_noclobber(filepath)
+            .expect("failed to move private key");
+        public_keyfile
+            .persist_noclobber(filepath.with_extension("pub"))
+            .expect("failed to move public key");
+
+        util::set_file_permissions(filepath, "600").expect("failed to set permissions");
+        util::set_file_permissions(&filepath.with_extension("pub"), "600")
+            .expect("failed to set permissions");
 
         ssh::ensure_agent_running().expect("failed to start ssh-agent");
 

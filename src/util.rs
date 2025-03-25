@@ -10,7 +10,7 @@ use std::process;
 /// - `filepath`: The path to where the file should be created.
 /// - `comment`: The comment to write to the file.
 pub fn create_file_with_comment(filepath: &Path, comment: &str) -> io::Result<()> {
-    write!(fs::File::create_new(filepath)?, "# {}", comment)
+    write!(fs::File::create(filepath)?, "# {}", comment)
 }
 
 /// Get the preferred editor of the user.

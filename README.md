@@ -37,8 +37,9 @@ $ keyport set-password <FILE>
 - [X] Show command to show public keys
 - [X] Allow for password protection 
 - [X] Support custom editors
-- [ ] Key validation (when adding)
 - [ ] List command to list active and inactive keys
 - [ ] Generating new keys
 - [ ] Open temporary files for the keys, validate them and only if everything is fine write them to the ssh directory.
+    - [X] Writing keys to temporary files first.
+    - [ ] Key validation (when adding)
 - [ ] Improve the error handling
