@@ -65,6 +65,10 @@ enum Command {
 impl Interface {
     /// Run the interface (after `Interface::parse()` has been called).
     pub fn run(&self) {
+        if !ssh::are_required_tools_installed() {
+            eprintln!("openssh tools missing, please install them.");
+        }
+
         match &self.command {
             Command::Add {
                 file,

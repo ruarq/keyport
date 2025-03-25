@@ -5,6 +5,12 @@ use std::fs;
 use std::io;
 use std::path::{Path, PathBuf};
 use std::process;
+use which::which;
+
+/// Check if the required cli tools are available.
+pub fn are_required_tools_installed() -> bool {
+    which("ssh-add").is_ok() && which("ssh-keygen").is_ok() && which("ssh-agent").is_ok()
+}
 
 /// Get the `~/.ssh` directory.
 pub fn directory() -> Option<PathBuf> {
